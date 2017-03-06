@@ -7,6 +7,7 @@ module wave_display_top(
     input [9:0]  y,  // [0..1023]     
     input valid,
     input vsync,
+    input [2:0] xscale,
     input [2:0] yscale,
     output [7:0] r,
     output [7:0] g,
@@ -31,6 +32,16 @@ module wave_display_top(
         .read_index(read_index)
     );
     
+    wire [8:0] scaled_address;
+    wire out_of_range_x;
+    address_scale as(
+        .read_value(read_address[7:0]),
+        .scale(xscale),
+        .scaled_value(scaled_address[7:0]),
+        .out_of_range(out_of_range_x) 
+    );
+    assign scaled_address[8] = read_address[8];
+
     ram_1w2r #(.WIDTH(8), .DEPTH(9)) sample_ram(
         .clka(clk),
         .clkb(clk),
@@ -38,17 +49,17 @@ module wave_display_top(
         .addra(write_address),
         .dina(write_sample),
         .douta(),
-        .addrb(read_address),
+        .addrb(scaled_address),
         .doutb(read_sample)
     );
     
     wire [7:0] scaled_value;
-    wire [1:0] out_of_range;
+    wire [1:0] out_of_range_y;
     sample_scale ss(
         .read_value(read_sample),
         .scale(yscale),
         .scaled_value(scaled_value),
-        .out_of_range(out_of_range) 
+        .out_of_range(out_of_range_y) 
     );
 
     wire valid_pixel;
@@ -61,7 +72,8 @@ module wave_display_top(
         .valid(valid),
         .read_address(read_address),
         .read_value(scaled_value),
-        .out_of_range_y(out_of_range),
+        .out_of_range_x(out_of_range_x),
+        .out_of_range_y(out_of_range_y),
         .read_index(read_index),
         .valid_pixel(valid_pixel),
         .r(wd_r), .g(wd_g), .b(wd_b)

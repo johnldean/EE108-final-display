@@ -6,6 +6,7 @@ module wave_display (
     input valid,
     input [7:0] read_value,
     input [1:0] out_of_range_y,
+    input out_of_range_x,
     input read_index,
     output wire [8:0] read_address,
     output wire valid_pixel,
@@ -14,16 +15,20 @@ module wave_display (
     output wire [7:0] b
 );
 
-	// assigning the read adress to be one ahead of the current address so that the ROM output will be
-	// on time even with the delay
+    //Store the previous adress, so that we can tell when the read address has updated.
     wire [8:0] read_address_prev;
 	assign read_address = {read_index, x[9:2]};
     dffr #(9) FF1(.clk(clk), .r(reset), .d(read_address), .q(read_address_prev));
 	
+    //FF's for storing the current and old read values
     wire new_addr = (read_address != read_address_prev);
     wire [7:0] read_value_old, read_value_old_checked;
     reg [7:0] read_value_checked;
-	dffre #(8) FF4(.clk(clk), .r(reset), .d(read_value_checked), .q(read_value_old), .en(new_addr));
+	dffre #(8) FF2(.clk(clk), .r(reset), .d(read_value_checked), .q(read_value_old), .en(new_addr));
+
+    //out of range x will update before the value back is actually returned. This delays it by one clock cycle
+    wire out_of_range_x_curr;
+    dffr #(1) FF3(.clk(clk), .r(reset), .d(out_of_range_x), .q(out_of_range_x_curr));
 
     //Check for the read_value input being off-screen
     always @(*) begin
@@ -45,7 +50,7 @@ module wave_display (
     assign read_value_old_checked = left_edge ? read_value : read_value_old;
     assign setup_region = ((y == 0) & (x < 9)) | (x == 0);
 	// logic for when a pixed should be colored
-    assign color_pixel = (((read_value_checked >= y[9:2]) & (read_value_old_checked <= y[9:2])) | ((read_value_checked <= y[9:2]) & (read_value_old_checked >= y[9:2])));
+    assign color_pixel = (((read_value_checked >= y[9:2]) & (read_value_old_checked <= y[9:2])) | ((read_value_checked <= y[9:2]) & (read_value_old_checked >= y[9:2]))) & ~out_of_range_x_curr;
     // logic for when the pixels are colored
 	assign valid_pixel = (x <= 1024) & valid;
 

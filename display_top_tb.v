@@ -49,6 +49,7 @@ module display_top_tb();
     reg valid;
     reg read_index;
     reg vsync;
+    reg [2:0] xscale;
     reg [2:0] yscale;
     wire [7:0] r,g,b;
 
@@ -61,6 +62,7 @@ module display_top_tb();
         // .y(y_q[9:0]),
         .x(x[10:0]),
         .y(y[9:0]),
+        .xscale(xscale),
         .yscale(yscale),
         .valid(valid),
         .vsync(vsync),
@@ -87,7 +89,8 @@ module display_top_tb();
     //dispay
     initial begin
 
-        yscale = 3;
+        yscale = 6;
+        xscale = 6;
     	valid = 1;
         vsync = 0;
         repeat (10_000) @(posedge clk);

@@ -9,9 +9,7 @@ module wave_display_top(
     input vsync,
     input [2:0] xscale,
     input [2:0] yscale,
-    output [7:0] r,
-    output [7:0] g,
-    output [7:0] b
+    output pixel
 );
 
     wire [7:0] read_sample, write_sample;
@@ -62,8 +60,7 @@ module wave_display_top(
         .out_of_range(out_of_range_y) 
     );
 
-    wire valid_pixel;
-    wire [7:0] wd_r, wd_g, wd_b;
+    wire valid_pixel, pixel;
     wave_display wd(
         .clk(clk),
         .reset(reset),
@@ -76,9 +73,7 @@ module wave_display_top(
         .out_of_range_y(out_of_range_y),
         .read_index(read_index),
         .valid_pixel(valid_pixel),
-        .r(wd_r), .g(wd_g), .b(wd_b)
+        .pixel(pixel)
     );
-
-    assign {r, g, b} = valid_pixel ? {wd_r, wd_g, wd_b} : {3{8'b0}};
-
+    
 endmodule

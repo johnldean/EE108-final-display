@@ -10,9 +10,7 @@ module wave_display (
     input read_index,
     output wire [8:0] read_address,
     output wire valid_pixel,
-    output wire [7:0] r,
-    output wire [7:0] g,
-    output wire [7:0] b
+    output wire pixel;
 );
 
     //Store the previous adress, so that we can tell when the read address has updated.
@@ -54,15 +52,8 @@ module wave_display (
     // logic for when the pixels are colored
 	assign valid_pixel = (x <= 1024) & valid;
 
-    // some stuff to make colors
-    wire [7:0] red, green, blue;
-    assign red = 0;
-    assign green = 8'hFF;
-    assign blue = 0;
-
-
-    // if all the checks meet assign the pixel values
-	assign {r, g, b} = (color_pixel & valid & valid_pixel & ~setup_region) ? {red, green, blue} : 24'h00_00_00;
+    // if all the checks meet assign the pixel true
+	assign pixel = (color_pixel & valid & valid_pixel & ~setup_region);
 
 
 endmodule

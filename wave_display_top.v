@@ -43,12 +43,12 @@ module wave_display_top(
     );
     
     wire [7:0] scaled_value;
-    wire in_range;
+    wire [1:0] out_of_range;
     sample_scale ss(
         .read_value(read_sample),
         .scale(yscale),
         .scaled_value(scaled_value),
-        .in_range(in_range) 
+        .out_of_range(out_of_range) 
     );
 
     wire valid_pixel;
@@ -61,7 +61,7 @@ module wave_display_top(
         .valid(valid),
         .read_address(read_address),
         .read_value(scaled_value),
-        .in_range_y(in_range),
+        .out_of_range_y(out_of_range),
         .read_index(read_index),
         .valid_pixel(valid_pixel),
         .r(wd_r), .g(wd_g), .b(wd_b)

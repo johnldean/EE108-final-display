@@ -2,14 +2,14 @@ module sample_scale_tb();
 	reg [7:0] read_value;
 	reg [2:0] scale;
 	wire [7:0] scaled_value;
-	wire in_range; 
+	wire out_of_range; 
 
 
 	sample_scale DUT(
 		.read_value(read_value),
 		.scale(scale),
 		.scaled_value(scaled_value),
-		.in_range(in_range)
+		.out_of_range(out_of_range)
 		);
 
 	initial begin

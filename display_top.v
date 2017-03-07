@@ -22,10 +22,10 @@ module display_top (
 	input [1:0] song,
 
 	input new_note,
-	input note [7:0],
-	input duration[7:0]
+	input [7:0] note ,
+	input [7:0] duration,
 
-	output wire [7:0] r, g, b;
+	output wire [7:0] r, g, b
 	);
 
 
@@ -34,18 +34,18 @@ module display_top (
 	wire [2:0] xscale, yscale;
 
 	display_scaling_fsm xscaler(
-		.clk(clk);
-		.reset(reset);
-		.stretch(x_stretch);
-		.shrink(x_shrink);
+		.clk(clk),
+		.reset(reset),
+		.stretch(x_stretch),
+		.shrink(x_shrink),
 		.scale(xscale)
 		);
 
 	display_scaling_fsm yscaler(
-		.clk(clk);
-		.reset(reset);
-		.stretch(y_stretch);
-		.shrink(y_shrink);
+		.clk(clk),
+		.reset(reset),
+		.stretch(y_stretch),
+		.shrink(y_shrink),
 		.scale(yscale)
 		);
 
@@ -118,28 +118,8 @@ module display_top (
 
 	//******* OTHER DISPLAY STUFF ********//
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	assign r = r_w;
 	assign g = g_w;
 	assign b = b_w;
 
-endmodule;
+endmodule

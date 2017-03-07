@@ -10,7 +10,7 @@ module wave_display (
     input read_index,
     output wire [8:0] read_address,
     output wire valid_pixel,
-    output wire pixel;
+    output wire pixel
 );
 
     //Store the previous adress, so that we can tell when the read address has updated.

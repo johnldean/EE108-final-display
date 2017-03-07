@@ -44,52 +44,35 @@ module display_top_tb();
 
 
     //***** DISPLAY STUFF *******//
-    
-
     reg [10:0] x;
     reg [9:0] y;
     reg valid;
+    reg read_index;
     reg vsync;
+    reg [2:0] xscale;
+    reg [2:0] yscale;
     wire [7:0] r,g,b;
 
-    reg x_shrink, x_stretch, y_shrink, y_stretch;
-    reg [1:0] song, play_state;
-    reg [7:0] note, duration;
-    reg new_note;
-
-
-    wire [15:0] sample_in_full, sample_in_1, sample_in_2, sample_in_3;
-    assign sample_in_full = sample;
-    assign sample_in_1 = sample >>> 1;    
-    assign sample_in_2 = sample >>> 2;
-    assign sample_in_3 = -sample >>> 1;
-
-
-    display_top d_t(
-        .clk(clk),
-        .reset(reset),
+    wave_display_top wd_top (
+        .clk (clk),
+        .reset (reset),
+        .new_sample (new_sample),
+        .sample (sample),
+        // .x(x_q[10:0]),
+        // .y(y_q[9:0]),
+        .x(x[10:0]),
+        .y(y[9:0]),
+        .xscale(xscale),
+        .yscale(yscale),
         .valid(valid),
         .vsync(vsync),
-        .x(x),
-        .y(y),
-
-        .new_sample_ready(new_sample),
-        .sample_in_full(sample_in_full),
-        .sample_in_1(sample_in_1),
-        .sample_in_2(sample_in_2),
-        .sample_in_3(sample_in_3),
-
-        .x_shrink(x_shrink),
-        .x_stretch(x_stretch),
-        .y_shrink(y_shrink),
-        .y_stretch(y_stretch),
-        .play_state(play_state),
-        .song(song),
-        .new_note(new_note),
-        .note(note),
-        .duration(duration),
-        .r(r), .g(g), .b(b)
+        .r(r),
+        .g(g),
+        .b(b) 
     );
+
+
+
 
     // Clock and reset
     initial begin
@@ -105,10 +88,10 @@ module display_top_tb();
 
     //dispay
     initial begin
-    	{x_shrink, x_stretch, y_shrink, y_stretch} = 0;
-        {song, play_state} = 0;
-        {note, duration} = 0;
-        valid = 1;
+
+        yscale = 6;
+        xscale = 6;
+    	valid = 1;
         vsync = 0;
         repeat (10_000) @(posedge clk);
         forever begin
@@ -138,8 +121,6 @@ module display_top_tb();
     // Tests
     integer delay;
     initial begin
-
-
         delay = 1279*1023 + 10_000;
         play_button = 1'b0;
         next_button = 1'b0;
